@@ -1,9 +1,8 @@
 import { EditableSpan } from '@/common/components/EditableSpan/EditableSpan';
 import { useAppDispatch } from '@/common/hooks';
 import {
-    changeTaskStatusTC,
-    changeTaskTitleTC,
     deleteTaskTC,
+    updateTaskTC,
 } from '@/features/todolists/model/tasks-slice';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Checkbox from '@mui/material/Checkbox';
@@ -30,11 +29,11 @@ export const TaskItem = ({ task, todolistId }: Props) => {
         const newStatusValue = e.currentTarget.checked
             ? TaskStatus.Completed
             : TaskStatus.New;
-        dispatch(changeTaskStatusTC({ task, status: newStatusValue }));
+        dispatch(updateTaskTC({ task, changes: { status: newStatusValue } }));
     };
 
     const changeTaskTitle = (title: string) => {
-        dispatch(changeTaskTitleTC({ task, title }));
+        dispatch(updateTaskTC({ task, changes: { title } }));
     };
 
     const isTaskCompleted = task.status === TaskStatus.Completed;

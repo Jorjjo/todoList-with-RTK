@@ -5,20 +5,25 @@ import {
     deleteTodolistTC,
 } from '@/features/todolists/model/todolists-slice.ts';
 import { tasksApi } from '../api/tasksApi';
-import { DomainTask } from '../api/tasksApi.types';
+import { DomainTask, UpdateTaskModel } from '../api/tasksApi.types';
+import { setStatusAC } from '@/app/app-slice';
 
 export type TasksState = Record<string, DomainTask[]>;
+type UpdateTaskChanges = Partial<UpdateTaskModel>;
 
 export const tasksSlice = createAppSlice({
     name: 'tasks',
     initialState: {} as TasksState,
     reducers: (create) => ({
         fetchTasksTC: create.asyncThunk(
-            async (todolistId: string, { rejectWithValue }) => {
+            async (todolistId: string, { rejectWithValue, dispatch }) => {
                 try {
+                    dispatch(setStatusAC({ status: 'loading' }));
                     const res = await tasksApi.getTasks(todolistId);
+                    dispatch(setStatusAC({ status: 'succeeded' }));
                     return { todolistId, tasks: res.data.items };
                 } catch (error) {
+                    dispatch(setStatusAC({ status: 'failed' }));
                     return rejectWithValue(null);
                 }
             },
@@ -31,13 +36,16 @@ export const tasksSlice = createAppSlice({
         createTaskTC: create.asyncThunk(
             async (
                 args: { todolistId: string; title: string },
-                { rejectWithValue },
+                { rejectWithValue, dispatch },
             ) => {
                 try {
+                    dispatch(setStatusAC({ status: 'loading' }));
                     const response = await tasksApi.createTask(args);
                     const task = response.data.data.item;
+                    dispatch(setStatusAC({ status: 'succeeded' }));
                     return task;
                 } catch (error) {
+                    dispatch(setStatusAC({ status: 'failed' }));
                     return rejectWithValue(null);
                 }
             },
@@ -71,56 +79,101 @@ export const tasksSlice = createAppSlice({
                 },
             },
         ),
-        changeTaskStatusTC: create.asyncThunk(
+        // changeTaskStatusTC: create.asyncThunk(
+        //     async (
+        //         args: { task: DomainTask; status: TaskStatus },
+        //         { rejectWithValue },
+        //     ) => {
+        //         try {
+        //             const res = await tasksApi.updateTask({
+        //                 taskId: args.task.id,
+        //                 todolistId: args.task.todoListId,
+        //                 model: { ...args.task, status: args.status },
+        //             });
+        //             return res.data.data.item;
+        //         } catch (error) {
+        //             return rejectWithValue(null);
+        //         }
+        //     },
+        //     {
+        //         fulfilled: (state, action) => {
+        //             const task = state[action.payload.todoListId].find(
+        //                 (task) => task.id === action.payload.id,
+        //             );
+        //             if (task) {
+        //                 task.status = action.payload.status;
+        //             }
+        //         },
+        //     },
+        // ),
+        // changeTaskTitleTC: create.asyncThunk(
+        //     async (
+        //         args: { task: DomainTask; title: string },
+        //         { rejectWithValue },
+        //     ) => {
+        //         try {
+        //             const res = await tasksApi.updateTask({
+        //                 taskId: args.task.id,
+        //                 todolistId: args.task.todoListId,
+        //                 model: { ...args.task, title: args.title },
+        //             });
+        //             return res.data.data.item;
+        //         } catch (error) {
+        //             return rejectWithValue(null);
+        //         }
+        //     },
+        //     {
+        //         fulfilled: (state, action) => {
+        //             const task = state[action.payload.todoListId].find(
+        //                 (task) => task.id === action.payload.id,
+        //             );
+        //             if (task) {
+        //                 task.title = action.payload.title;
+        //             }
+        //         },
+        //     },
+        // ),
+        updateTaskTC: create.asyncThunk(
             async (
-                args: { task: DomainTask; status: TaskStatus },
-                { rejectWithValue },
-            ) => {
-                try {
-                    const res = await tasksApi.updateTask({
-                        taskId: args.task.id,
-                        todolistId: args.task.todoListId,
-                        model: { ...args.task, status: args.status },
-                    });
-                    return res.data.data.item;
-                } catch (error) {
-                    return rejectWithValue(null);
-                }
-            },
-            {
-                fulfilled: (state, action) => {
-                    const task = state[action.payload.todoListId].find(
-                        (task) => task.id === action.payload.id,
-                    );
-                    if (task) {
-                        task.status = action.payload.status;
-                    }
+                args: {
+                    task: DomainTask;
+                    changes: Partial<UpdateTaskModel>;
                 },
-            },
-        ),
-        changeTaskTitleTC: create.asyncThunk(
-            async (
-                args: { task: DomainTask; title: string },
-                { rejectWithValue },
+                { rejectWithValue, dispatch },
             ) => {
                 try {
+                    dispatch(setStatusAC({ status: 'loading' }));
                     const res = await tasksApi.updateTask({
                         taskId: args.task.id,
                         todolistId: args.task.todoListId,
-                        model: { ...args.task, title: args.title },
+                        model: {
+                            title: args.task.title,
+                            description: args.task.description,
+                            status: args.task.status,
+                            priority: args.task.priority,
+                            startDate: args.task.startDate,
+                            deadline: args.task.deadline,
+
+                            ...args.changes,
+                        },
                     });
+                    dispatch(setStatusAC({ status: 'succeeded' }));
                     return res.data.data.item;
                 } catch (error) {
+                    dispatch(setStatusAC({ status: 'failed' }));
                     return rejectWithValue(null);
                 }
             },
             {
                 fulfilled: (state, action) => {
-                    const task = state[action.payload.todoListId].find(
-                        (task) => task.id === action.payload.id,
+                    const updatedTask = action.payload;
+
+                    const task = state[updatedTask.todoListId].find(
+                        (task) => task.id === updatedTask.id,
                     );
+
                     if (task) {
-                        task.title = action.payload.title;
+                        Object.assign(task, updatedTask);
                     }
                 },
             },
@@ -141,44 +194,10 @@ export const tasksSlice = createAppSlice({
     },
 });
 
-export const {
-    changeTaskStatusTC,
-    changeTaskTitleTC,
-    createTaskTC,
-    deleteTaskTC,
-    fetchTasksTC,
-} = tasksSlice.actions;
+export const { createTaskTC, deleteTaskTC, fetchTasksTC, updateTaskTC } =
+    tasksSlice.actions;
 export const tasksReducer = tasksSlice.reducer;
 export const { selectTasks } = tasksSlice.selectors;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // export const tasksSlice = createAppSlice({
 //     name: 'tasks',
@@ -244,5 +263,3 @@ export const { selectTasks } = tasksSlice.selectors;
 //         selectTasks: (state) => state,
 //     },
 // });
-
-

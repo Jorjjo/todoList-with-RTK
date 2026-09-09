@@ -1,6 +1,7 @@
 import { createAppSlice } from '@/common/utils';
 import { Todolist } from '../api/todolistsApi.types';
 import { todolistsApi } from '../api/todolistsApi';
+import { setStatusAC } from '@/app/app-slice';
 
 export type DomainTodolist = Todolist & { filter: FilterValues };
 export type FilterValues = 'all' | 'active' | 'completed';
@@ -11,12 +12,15 @@ export const todoListsSlice = createAppSlice({
 
     reducers: (create) => ({
         fetchTodolistsTC: create.asyncThunk(
-            async (_arg, { rejectWithValue }) => {
+            async (_arg, { rejectWithValue, dispatch }) => {
                 try {
+                    dispatch(setStatusAC({ status: 'loading' }));
                     const res = await todolistsApi.getTodolists();
                     const newTodolists = res.data;
+                    dispatch(setStatusAC({ status: 'succeeded' }));
                     return { todolists: newTodolists };
                 } catch (error: any) {
+                    dispatch(setStatusAC({ status: 'failed' }))
                     return rejectWithValue(error.message);
                 }
             },
