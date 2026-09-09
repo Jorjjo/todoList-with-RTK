@@ -47,7 +47,7 @@ export const AppHttpRequests = () => {
     }, []);
 
     const createTodolist = (title: string) => {
-        todolistsApi.createTodolist(title).then((res) => {
+        todolistsApi.createTodolist({title}).then((res) => {
             const newTodolist = res.data.data.item;
             setTodolists([newTodolist, ...todolists]);
             setTasks({ ...tasks, [res.data.data.item.id]: [] });
@@ -56,7 +56,7 @@ export const AppHttpRequests = () => {
     };
 
     const deleteTodolist = (id: string) => {
-        todolistsApi.deleteTodolist(id).then(() => {
+        todolistsApi.deleteTodolist({id}).then(() => {
             console.log('AHTUNG!!!! 4, deleteTodolist');
             setTodolists(todolists.filter((todolist) => todolist.id !== id));
         });
