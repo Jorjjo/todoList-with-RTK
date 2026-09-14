@@ -3,7 +3,10 @@ import { FilterButtons } from './FilterButtons/FilterButtons';
 import { Tasks } from './Tasks/Tasks';
 import { TodolistTitle } from './TodolistTitle/TodolistTitle';
 import { CreateItemForm } from '@/common/components/CreateItemForm/CreateItemForm';
-import { DomainTodolist } from '@/features/todolists/model/todolists-slice';
+import {
+    deleteTodolistTC,
+    DomainTodolist,
+} from '@/features/todolists/model/todolists-slice';
 import { createTaskTC } from '@/features/todolists/model/tasks-slice';
 
 type Props = {
@@ -17,10 +20,16 @@ export const TodolistItem = ({ todolist }: Props) => {
         dispatch(createTaskTC({ todolistId: todolist.id, title }));
     };
 
+    const deleteTodolist = () => {
+        dispatch(deleteTodolistTC({ id: todolist.id }));
+    };
+
     return (
-        <div>
-            <TodolistTitle todolist={todolist} />
-            <CreateItemForm onCreateItem={createTask} />
+        <div inert={todolist.entityStatus === 'loading'}>
+            <TodolistTitle todolist={todolist} onDeleteClick={deleteTodolist} />
+            <CreateItemForm
+                onCreateItem={createTask}
+            />
             <Tasks todolist={todolist} />
             <FilterButtons todolist={todolist} />
         </div>

@@ -17,7 +17,7 @@ export const getTheme = (themeMode: ThemeMode) => {
                 styleOverrides: {
                     root: ({ theme }) => ({
                         '&:hover': {
-                            color: theme.palette.secondary.main,
+                            color: theme.palette.primary.main,
                             backgroundColor: 'transparent',
                         },
                     }),

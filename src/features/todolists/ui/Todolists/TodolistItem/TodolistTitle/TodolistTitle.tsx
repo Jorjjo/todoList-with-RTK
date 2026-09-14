@@ -6,22 +6,18 @@ import IconButton from '@mui/material/IconButton';
 import styles from './TodolistTitle.module.css';
 import {
     changeTodolistTitleTC,
-    deleteTodolistTC,
     DomainTodolist,
 } from '@/features/todolists/model/todolists-slice';
 
 type Props = {
     todolist: DomainTodolist;
+    onDeleteClick: () => void;
 };
 
-export const TodolistTitle = ({ todolist }: Props) => {
-    const { id, title } = todolist;
+export const TodolistTitle = ({ todolist, onDeleteClick }: Props) => {
+    const { id, title, entityStatus } = todolist;
 
     const dispatch = useAppDispatch();
-
-    const deleteTodolist = () => {
-        dispatch(deleteTodolistTC({ id }));
-    };
 
     const changeTodolistTitle = (title: string) => {
         dispatch(changeTodolistTitleTC({ id, title }));
@@ -32,7 +28,10 @@ export const TodolistTitle = ({ todolist }: Props) => {
             <h3>
                 <EditableSpan value={title} onChange={changeTodolistTitle} />
             </h3>
-            <IconButton onClick={deleteTodolist}>
+            <IconButton
+                onClick={onDeleteClick}
+                disabled={entityStatus === 'loading'}
+            >
                 <DeleteIcon />
             </IconButton>
         </div>

@@ -1,12 +1,14 @@
-import { TaskStatus } from '@/common/enums/enums';
+import { setStatusAC } from '@/app/app-slice';
+import { ResultCode } from '@/common/enums/enums';
 import { createAppSlice } from '@/common/utils';
+import { handleResultCodeError } from '@/common/utils/handleResultCodeError';
+import { handleServerError } from '@/common/utils/handleServerError';
 import {
     createTodolistTC,
-    deleteTodolistTC,
+    deleteTodolistTC
 } from '@/features/todolists/model/todolists-slice.ts';
 import { tasksApi } from '../api/tasksApi';
 import { DomainTask, UpdateTaskModel } from '../api/tasksApi.types';
-import { setStatusAC } from '@/app/app-slice';
 
 export type TasksState = Record<string, DomainTask[]>;
 type UpdateTaskChanges = Partial<UpdateTaskModel>;
@@ -23,7 +25,7 @@ export const tasksSlice = createAppSlice({
                     dispatch(setStatusAC({ status: 'succeeded' }));
                     return { todolistId, tasks: res.data.items };
                 } catch (error) {
-                    dispatch(setStatusAC({ status: 'failed' }));
+                    handleServerError(dispatch, error);
                     return rejectWithValue(null);
                 }
             },
@@ -42,10 +44,15 @@ export const tasksSlice = createAppSlice({
                     dispatch(setStatusAC({ status: 'loading' }));
                     const response = await tasksApi.createTask(args);
                     const task = response.data.data.item;
+
+                    if (response.data.resultCode !== ResultCode.Success) {
+                        handleResultCodeError(dispatch, response.data);
+                        return rejectWithValue(null);
+                    }
                     dispatch(setStatusAC({ status: 'succeeded' }));
                     return task;
-                } catch (error) {
-                    dispatch(setStatusAC({ status: 'failed' }));
+                } catch (error: any) {
+                    handleServerError(dispatch, error);
                     return rejectWithValue(null);
                 }
             },
@@ -58,12 +65,19 @@ export const tasksSlice = createAppSlice({
         deleteTaskTC: create.asyncThunk(
             async (
                 args: { todolistId: string; taskId: string },
-                { rejectWithValue },
+                { rejectWithValue, dispatch },
             ) => {
                 try {
-                    await tasksApi.deleteTask(args);
+                    dispatch(setStatusAC({ status: 'loading' }));
+                    const res = await tasksApi.deleteTask(args);
+                    if (res.data.resultCode !== ResultCode.Success) {
+                        handleResultCodeError(dispatch, res.data);
+                        return rejectWithValue(null);
+                    }
+                    dispatch(setStatusAC({ status: 'succeeded' }));
                     return args;
                 } catch (error) {
+                    handleServerError(dispatch, error);
                     return rejectWithValue(null);
                 }
             },
@@ -137,7 +151,7 @@ export const tasksSlice = createAppSlice({
             async (
                 args: {
                     task: DomainTask;
-                    changes: Partial<UpdateTaskModel>;
+                    changes: UpdateTaskChanges;
                 },
                 { rejectWithValue, dispatch },
             ) => {
@@ -157,10 +171,14 @@ export const tasksSlice = createAppSlice({
                             ...args.changes,
                         },
                     });
+                    if (res.data.resultCode !== ResultCode.Success) {
+                        handleResultCodeError(dispatch, res.data);
+                        return rejectWithValue(null);
+                    }
                     dispatch(setStatusAC({ status: 'succeeded' }));
                     return res.data.data.item;
                 } catch (error) {
-                    dispatch(setStatusAC({ status: 'failed' }));
+                    handleServerError(dispatch, error);
                     return rejectWithValue(null);
                 }
             },
