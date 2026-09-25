@@ -1,4 +1,5 @@
 import type { ThemeMode } from '@/app/app-slice';
+import { colors } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 
 export const getTheme = (themeMode: ThemeMode) => {
@@ -7,6 +8,7 @@ export const getTheme = (themeMode: ThemeMode) => {
             mode: themeMode,
             primary: {
                 main: '#3f51b5',
+                light: '#ffff'
             },
             secondary: {
                 main: '#d81b60',
@@ -17,7 +19,7 @@ export const getTheme = (themeMode: ThemeMode) => {
                 styleOverrides: {
                     root: ({ theme }) => ({
                         '&:hover': {
-                            color: theme.palette.primary.main,
+                            color: theme.palette.secondary.main,
                             backgroundColor: 'transparent',
                         },
                     }),
@@ -34,11 +36,13 @@ export const getTheme = (themeMode: ThemeMode) => {
                 },
             },
             MuiButton: {
+
                 styleOverrides: {
                     root: ({ theme }) => ({
                         '&:hover': {
                             backgroundColor: 'transparent',
-                            outline: `1px solid ${theme.palette.secondary.main}`,
+                            outline: `2px solid ${theme.palette.secondary.main}`,
+                            border: '0'
                         },
                     }),
                 },

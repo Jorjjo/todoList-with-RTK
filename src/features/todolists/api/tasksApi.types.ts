@@ -1,25 +1,16 @@
-import { TaskPriority, TaskStatus } from '@/common/enums/enums';
+import { TaskPriority } from '@/common/enums/enums';
+import z from 'zod';
+import { taskShmema } from '../model/task.schema';
 
-export type DomainTask = {
-    description: string;
-    title: string;
-    status: TaskStatus;
-    priority: TaskPriority;
-    startDate: string;
-    deadline: string;
-    id: string;
-    todoListId: string;
-    order: number;
-    addedDate: string;
-};
+export type DomainTask = z.infer<typeof taskShmema>;
 
 export type UpdateTaskModel = {
-    description: string;
+    description: string | null;
     title: string;
     status: number;
     priority: TaskPriority;
-    startDate: string;
-    deadline: string;
+    startDate: string | null;
+    deadline: string | null;
 };
 export type GetTasksResponse = {
     error: string | null;

@@ -32,17 +32,18 @@ export const Header = () => {
     };
 
     return (
-        <AppBar position='static' sx={{ mb: '30px' }}>
+        <AppBar position='static' sx={{ mb: '30px' }} enableColorOnDark>
             <Toolbar>
                 <Container maxWidth={'lg'} sx={containerSx}>
                     <IconButton color='inherit'>
                         <MenuIcon />
                     </IconButton>
                     <div>
-                        <NavButton variant='contained'>Sign in</NavButton>
-                        <NavButton variant='contained'>Sign up</NavButton>
+                        <NavButton variant='text' color={'inherit'}>Sign in</NavButton>
+                        <NavButton variant='text' color={'inherit'}>Sign up</NavButton>
                         <NavButton
-                            variant='contained'
+                            variant='text'
+                            color={'inherit'}
                             background={theme.palette.primary.dark}
                         >
                             Faq

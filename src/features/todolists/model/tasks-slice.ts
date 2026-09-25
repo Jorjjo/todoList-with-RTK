@@ -5,10 +5,11 @@ import { handleResultCodeError } from '@/common/utils/handleResultCodeError';
 import { handleServerError } from '@/common/utils/handleServerError';
 import {
     createTodolistTC,
-    deleteTodolistTC
+    deleteTodolistTC,
 } from '@/features/todolists/model/todolists-slice.ts';
 import { tasksApi } from '../api/tasksApi';
 import { DomainTask, UpdateTaskModel } from '../api/tasksApi.types';
+import { taskShmema } from './task.schema';
 
 export type TasksState = Record<string, DomainTask[]>;
 type UpdateTaskChanges = Partial<UpdateTaskModel>;
@@ -22,6 +23,7 @@ export const tasksSlice = createAppSlice({
                 try {
                     dispatch(setStatusAC({ status: 'loading' }));
                     const res = await tasksApi.getTasks(todolistId);
+                    taskShmema.array().parse(res.data.items);
                     dispatch(setStatusAC({ status: 'succeeded' }));
                     return { todolistId, tasks: res.data.items };
                 } catch (error) {
