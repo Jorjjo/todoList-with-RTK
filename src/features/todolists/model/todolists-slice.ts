@@ -6,6 +6,7 @@ import { RequestStatus } from '@/common/types';
 import { handleServerError } from '@/common/utils/handleServerError';
 import { handleResultCodeError } from '@/common/utils/handleResultCodeError';
 import { ResultCode } from '@/common/enums/enums';
+import { todolistSchema } from './todolist.schema';
 
 export type DomainTodolist = Todolist & {
     filter: FilterValues;
@@ -23,6 +24,7 @@ export const todoListsSlice = createAppSlice({
                 try {
                     dispatch(setStatusAC({ status: 'loading' }));
                     const res = await todolistsApi.getTodolists();
+                    todolistSchema.array().parse(res.data);
                     const newTodolists = res.data;
                     dispatch(setStatusAC({ status: 'succeeded' }));
                     return { todolists: newTodolists };

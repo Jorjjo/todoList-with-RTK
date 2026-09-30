@@ -44,7 +44,8 @@ export const Header = () => {
                         <NavButton
                             variant='text'
                             color={'inherit'}
-                            background={theme.palette.primary.dark}
+                            // background={theme.palette.primary.dark}
+                            size='small'
                         >
                             Faq
                         </NavButton>

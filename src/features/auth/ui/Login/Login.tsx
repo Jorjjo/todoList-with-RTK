@@ -65,20 +65,33 @@ export function Login() {
                 </FormLabel>
                 <form onSubmit={handleSubmit(fetchFormData)}>
                     <FormGroup>
-                        <TextField
-                            label='Email'
-                            margin='normal'
-                            helperText={errors?.email?.message}
-                            error={!!errors.email}
-                            {...register('email')}
+                        <Controller
+                            name={'email'}
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    label='Email'
+                                    margin='normal'
+                                    helperText={errors?.email?.message}
+                                    error={!!errors.email}
+                                />
+                            )}
                         />
-                        <TextField
-                            type='password'
-                            label='Password'
-                            margin='normal'
-                            {...register('password')}
+                        <Controller
+                            name={'password'}
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    type='password'
+                                    label='Password'
+                                    margin='normal'
+                                    helperText={errors?.password?.message}
+                                    error={!!errors.password}
+                                />
+                            )}
                         />
-
                         <FormControlLabel
                             label='Remember me'
                             control={

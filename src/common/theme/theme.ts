@@ -1,3 +1,4 @@
+import { Main } from './../../app/Main';
 import type { ThemeMode } from '@/app/app-slice';
 import { colors } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
@@ -36,13 +37,12 @@ export const getTheme = (themeMode: ThemeMode) => {
                 },
             },
             MuiButton: {
-
                 styleOverrides: {
                     root: ({ theme }) => ({
                         '&:hover': {
-                            backgroundColor: 'transparent',
-                            outline: `2px solid ${theme.palette.secondary.main}`,
-                            border: '0'
+                            backgroundColor: theme.palette.primary,
+                            outline: `1px solid ${theme.palette.secondary.main}`,
+                            border: '0',
                         },
                     }),
                 },
