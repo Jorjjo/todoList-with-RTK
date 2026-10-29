@@ -12,4 +12,4 @@ export const NavButton = styled(Button)<Props>(() => ({
     padding: '6px 24px',
     minWidth: '100px',
     borderRadius: '4px',
-}));
+})) as typeof Button;

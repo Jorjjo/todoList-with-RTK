@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { tasksReducer } from '@/features/todolists/model/tasks-slice';
 import { appReducer } from './app-slice';
 import { todoListReducer } from '@/features/todolists/model/todolists-slice';
+import { authReducer } from '@/features/auth/model/auth-slice';
 
 // создание store
 export const store = configureStore({
@@ -9,6 +10,7 @@ export const store = configureStore({
         tasks: tasksReducer,
         todoLists: todoListReducer,
         app: appReducer,
+        auth: authReducer,
     },
 });
 

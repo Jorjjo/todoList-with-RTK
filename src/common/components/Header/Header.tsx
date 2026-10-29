@@ -14,10 +14,14 @@ import {
     selectThemeMode,
 } from '@/app/app-slice';
 import { LinearProgress } from '@mui/material';
+import { Link as RouterLink } from 'react-router';
+import { PATH } from '../Routing/routes/paths';
+import { logoutTC, selectAuth } from '@/features/auth/model/auth-slice';
 
 export const Header = () => {
     const themeMode = useAppSelector(selectThemeMode);
     const status = useAppSelector(selectStatus);
+    const isLoggedIn = useAppSelector(selectAuth);
 
     const dispatch = useAppDispatch();
 
@@ -31,6 +35,10 @@ export const Header = () => {
         );
     };
 
+    const handleLogout = () => {
+        dispatch(logoutTC());
+    };
+
     return (
         <AppBar position='static' sx={{ mb: '30px' }} enableColorOnDark>
             <Toolbar>
@@ -39,12 +47,28 @@ export const Header = () => {
                         <MenuIcon />
                     </IconButton>
                     <div>
-                        <NavButton variant='text' color={'inherit'}>Sign in</NavButton>
-                        <NavButton variant='text' color={'inherit'}>Sign up</NavButton>
+                        {isLoggedIn ? (
+                            <NavButton
+                                variant='text'
+                                color={'inherit'}
+                                onClick={handleLogout}
+                            >
+                                Log out
+                            </NavButton>
+                        ) : (
+                            <NavButton
+                                component={RouterLink}
+                                to={PATH.Login}
+                                variant='text'
+                                color={'inherit'}
+                            >
+                                Sign in
+                            </NavButton>
+                        )}
+
                         <NavButton
                             variant='text'
                             color={'inherit'}
-                            // background={theme.palette.primary.dark}
                             size='small'
                         >
                             Faq

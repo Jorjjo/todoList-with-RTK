@@ -1,7 +1,8 @@
 import { Box, Button } from '@mui/material';
 import styles from './PageNotFound.module.css';
 import { Link } from 'react-router';
-import { PATH } from '../Routing/Routing';
+import { PATH } from '../Routing/routes/paths';
+
 
 export const PageNotFound = () => (
     <Box className = {styles.notFound}>

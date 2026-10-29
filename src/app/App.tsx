@@ -6,7 +6,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { selectThemeMode } from './app-slice';
 import './App.css';
-import { Routing } from '@/common/components';
+import { Outlet } from 'react-router';
 
 export const App = () => {
     const themeMode = useAppSelector(selectThemeMode);
@@ -18,7 +18,7 @@ export const App = () => {
             <div className={'app'}>
                 <CssBaseline />
                 <Header />
-                <Routing />
+                <Outlet/>
                 <ErrorSnackbar />
             </div>
         </ThemeProvider>

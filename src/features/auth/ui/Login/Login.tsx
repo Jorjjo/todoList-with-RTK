@@ -1,5 +1,5 @@
 import { selectThemeMode } from '@/app/app-slice';
-import { useAppSelector } from '@/common/hooks';
+import { useAppDispatch, useAppSelector } from '@/common/hooks';
 import { getTheme } from '@/common/theme';
 import {
     Button,
@@ -14,10 +14,15 @@ import {
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoginInputs, loginSchema } from '../../model/login.shema';
+import { loginTC, selectAuth } from '../../model/auth-slice';
+import { Navigate } from 'react-router';
+import { PATH } from '@/common/components/Routing/routes/paths';
 
 export function Login() {
     const themeMode = useAppSelector(selectThemeMode);
     const theme = getTheme(themeMode);
+    const dispatch = useAppDispatch();
+    const isLoggedIn = useAppSelector(selectAuth);
 
     const {
         register,
@@ -34,9 +39,13 @@ export function Login() {
         resolver: zodResolver(loginSchema),
     });
     const fetchFormData: SubmitHandler<LoginInputs> = (data) => {
-        console.log(data);
+        dispatch(loginTC(data));
         reset();
     };
+
+    if (isLoggedIn) {
+        return <Navigate to={PATH.Main} />;
+    }
     return (
         <Grid container justifyContent={'center'}>
             <FormControl>
